@@ -1,0 +1,21 @@
+procedure main() {
+	var real x, y;
+	read (var real x);
+	read (var real y);
+	if(x < y) {
+		print(x + y * 2.0e2);
+		print(0x001F);
+	}
+	else {
+		cons bool a := true;
+		cons bool b := false;
+		print (a or b);
+		print (a and !b);
+		
+	//que programa incrível
+	/*estou maravilhada
+	
+	42*/
+	}
+	
+}

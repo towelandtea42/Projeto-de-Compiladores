@@ -1,0 +1,118 @@
+Package frank;
+
+Helpers
+
+/*Caracteres*/
+
+	chave_ini = '{';
+	chave_fim = '}';
+	mais_ou_menos = '+'|'-';
+	ul = '_';
+	ponto = '.';
+	
+	
+/*Blank*/
+
+	sp = ' ';
+	tab = 9;
+	cr = 13;
+	nl = 10; 
+	
+/*Operadores*/
+	menor = '<';
+	maior = '>';
+	igual = '=';
+	neg = '!';
+	doispontos = ':';
+	
+/*Números*/
+
+	digit = ['0' .. '9'];
+	digits = mais_ou_menos? digit+;
+	hexad = ['0'.. '9'] | ['a' .. 'f'] | ['A' .. 'F'];
+	hex = '0x' hexad+;
+	flut = digits ponto digits;
+
+/*Letras*/
+
+	char = ['a' .. 'z'] | ['A' .. 'Z'];
+	all = [0 .. 0xFFFF]; 
+
+Tokens
+
+/*Palavras reservadas*/
+
+	/*Tipos de variáveis*/
+	int = 'int';
+	real = 'real';
+	bool = 'bool';
+	
+	/*RW*/
+	print = 'print';
+	read = 'read';
+	
+	/*Loops e condicionais*/
+	while = 'while';
+	if = 'if';
+	else = 'else';
+	then = 'then';
+	
+	/*Lógicos*/
+	and = 'and';
+	or = 'or';
+	
+ function = 'function';
+ procedure = 'procedure';
+ var = 'var';
+
+ size = 'size';
+ cons = 'cons';
+ 
+
+ 
+ plus = '+';
+ minus = '-';
+ mult = '*';
+ div = '/';
+ mod = '%';
+ 
+ 
+ equal = igual;
+ lesser = menor;
+ neg = neg;
+ 
+ colon = ',';
+ dot = ponto;
+ semicolon = ';';
+ dec = ':=';
+ left_par = '(';
+ right_par = ')';
+ left_ket = '[';
+ right_ket = ']';
+ left_ces = '{';
+ right_ces = '}';
+ barra = '|';
+ 
+ 
+ blank = (sp | cr | nl)+;
+ comment_block = '/*' (all)* '*/';
+ comment_line = '//';
+ tab = tab;
+ espaco = sp+;
+ 
+ 
+ 
+ 
+ integer = (digits | hex);
+ float = ((flut) | (flut ('E' | 'e') digits));
+ boolean = 'true' | 'false';
+ identifier = (char | ul)(char | digits | ul)*;
+ 
+Ignored Tokens
+ comment_block,
+ comment_line,
+ espaco,
+ tab,
+ blank;
+ 
+ 

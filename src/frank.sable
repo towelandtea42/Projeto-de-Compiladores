@@ -184,7 +184,6 @@ Ignored Tokens
  	| {comando} sym_left_ces comando+ sym_right_ces
  	| {dec_comando} sym_left_ces dec+ comando+ sym_right_ces;
 	
- 
  /*                    EXPRESSÕES                */
  
  if_exp =

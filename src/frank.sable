@@ -137,7 +137,7 @@ Ignored Tokens
  	| {func} dec_funcao;
  	
  dec_print =
- 	print sym_left_par if_exp sym_right_par sym_semicolon;
+ 	print sym_left_par exp sym_right_par sym_semicolon;
  	
  dec_read = 
  	read sym_left_par parametro sym_right_par sym_semicolon;
@@ -148,7 +148,7 @@ Ignored Tokens
  
  dec_funcao = 
  	{simples} function tipo identifier sym_left_par sym_right_par exp;
- 	//| {composto} function tipo identifier sym_left_par parametros sym_right_par if_exp;
+ 	//| {composto} function tipo identifier sym_left_par parametros sym_right_par exp;
  
  parametros = 
  	{simples} parametro
@@ -166,15 +166,15 @@ Ignored Tokens
  /*                    COMANDOS                  */
  
  comando_if = 
- 	{sem_else} if sym_left_par if_exp sym_right_par comando
- 	|{com_else} if sym_left_par if_exp sym_right_par bloco else comando;
+ 	{sem_else} if sym_left_par exp sym_right_par comando
+ 	|{com_else} if sym_left_par exp sym_right_par bloco else comando;
  
  
  comando =
  	{bloco} bloco
  	| {if} comando_if
- 	| {while} while sym_left_par if_exp sym_right_par comando
- 	| {dec} variavel sym_dec if_exp sym_semicolon
+ 	| {while} while sym_left_par exp sym_right_par comando
+ 	| {dec} variavel sym_dec exp sym_semicolon
  	| {chamada} chamada
  	| {print} dec_print
  	| {read} dec_read;
@@ -184,65 +184,71 @@ Ignored Tokens
  	| {comando} sym_left_ces comando+ sym_right_ces
  	| {dec_comando} sym_left_ces dec+ comando+ sym_right_ces;
 	
+	
  /*                    EXPRESSÕES                */
  
- if_exp =
- 	{exp} exp
- 	| {if} if sym_left_par if_exp sym_right_par then_exp;
- 
  exp = 
- 	{bool} expressao_logica
- 	|{chamada} chamada
- 	|{bloco} bloco_exp;
+ 	{or} exp_or;
+
+ exp_or = 
+ 	{and} exp_and
+ 	| {or} exp_or or exp_and;
+ 	
+ exp_and = 
+ 	 {equal} exp_equal
+ 	| {and} exp_and and exp_equal;
+
+ exp_equal = 
+  	{lesser} exp_lesser
+ 	| {equal} exp_equal sym_equal exp_lesser;
  
+ exp_lesser = 
+ 	{mat} exp_mat
+ 	| {lesser} exp_lesser sym_lesser exp_mat;
+
+ exp_mat =
+	{fator} exp_fator
+	| {soma} exp_mat sym_plus exp_fator
+	| {menos} exp_mat sym_minus exp_fator;
+
+ exp_fator =
+	{exp_bool} exp_bool
+	| {mult} exp_fator sym_mult exp_bool
+	| {div} exp_fator sym_div exp_bool
+	| {mod} exp_fator sym_mod exp_bool;
+	
+ exp_bool =
+ 	{valor} exp_if
+ 	| {not} sym_neg exp_if;
+ 	
+ exp_if =
+ 	{exp} exp_termo
+ 	| {if} if sym_left_par exp_if sym_right_par exp_then;
+ 	
+ exp_then =
+ 	then exp exp_else;
+ 	
+ exp_else = 
+ 	else exp_if;
+
+ exp_termo =
+	{valor} valor
+	| {variavel} variavel
+	| {par} sym_left_par exp sym_right_par
+	| {chamada} chamada
+ 	| {bloco} bloco_exp;
+
  chamada = 
  	{simples} identifier sym_left_par sym_right_par
  	|{composta} identifier sym_left_par dec_exp sym_right_par;
  
  bloco_exp =
- 	{simples} sym_left_ces if_exp sym_right_ces
- 	|{composto} sym_left_ces dec_cons+ if_exp sym_right_ces;
-   	
- dec_exp = 
- 	{simples} if_exp
- 	|{composta} dec_exp sym_colon if_exp;
- 	
- then_exp =
- 	then if_exp else_exp;
- 	
- else_exp = 
- 	else if_exp;
- 	
-  expressao_logica = 
- 	{valor} expressao_bool
-	| {and} expressao_logica and expressao_bool
-	| {or} expressao_logica or expressao_bool;
+ 	{simples} sym_left_ces exp sym_right_ces
+ 	|{composto} sym_left_ces dec_cons+ exp sym_right_ces;
  
- expressao_bool =
- 	{valor} compara_expressao
- 	| {not} sym_neg compara_expressao;
- 	
- compara_expressao = 
- 	{valor} expressao_mat
- 	| {igual} compara_expressao sym_equal expressao_mat
-	| {menor_que} compara_expressao sym_lesser expressao_mat;
-
- expressao_mat =
-	{fator} fator
-	| {soma} expressao_mat sym_plus fator
-	| {menos} expressao_mat sym_minus fator;
-
- fator =
-	{termo} termo
-	| {mult} fator sym_mult termo
-	| {div} fator sym_div termo
-	| {mod} fator sym_mod termo;
-
- termo =
-	{valor} valor
-	/*| {negativo} sym_minus valor*/
-	| {variavel} variavel
-	| {par} sym_left_par if_exp sym_right_par;
+ dec_exp = 
+ 	{simples} exp
+ 	|{composta} dec_exp sym_colon exp;
 	
 
  /*                  DECLARAÇÕES                 */
@@ -267,7 +273,7 @@ Ignored Tokens
  	|{composta} dec_ini sym_colon inicializacao;
  
  inicializacao = 
- 	{exp} identifier sym_dec if_exp
+ 	{exp} identifier sym_dec exp
  	|{array_ext} identifier sym_dec array_ext
  	|{array_comp} identifier sym_dec array_comp;
  	
@@ -277,11 +283,11 @@ Ignored Tokens
  
  array_comp = 
  	{array} sym_left_ket identifier sym_barra array_comp sym_right_ket
- 	| {exp} sym_left_ket identifier sym_barra if_exp sym_right_ket;
+ 	| {exp} sym_left_ket identifier sym_barra exp sym_right_ket;
  
  tipo = 
  	{simples} tipo_base
- 	|{vetor} tipo sym_left_ket if_exp sym_right_ket;
+ 	|{vetor} tipo sym_left_ket exp sym_right_ket;
  
  tipo_base =
  	{int} int
@@ -299,7 +305,7 @@ Ignored Tokens
  	
  variavel = 
  	{simples} identifier
- 	| {vetor} variavel sym_left_ket if_exp sym_right_ket;
+ 	| {vetor} variavel sym_left_ket exp sym_right_ket;
  	
  /*                    COMENTÁRIO INCRÍVEL                */
 	
